@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Vue 2 CRM
 
 > A reusable Vue.js CRM starter project for real-world business based on Vue 2 PWA template with Vuetify.
@@ -104,3 +105,7 @@ There are two similar projects respectively built on the Angular and React. If y
 * Create an archived branch json-server
 
   This branch was the master which used Json-Server as fake API. Considering the hiccup of setting Json-Server up and maintenance, it will be replaced by fake service ( Readonly fake API). You still can find clone this branch by branch name __json-server__, but it will be no longer updated. It is an archived branch.
+=======
+# crm
+crm backend
+>>>>>>> 90b3f9f765813cc9038f06ee30b1e990facfcf43
