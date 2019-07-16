@@ -18,21 +18,27 @@
           <v-container fluid grid-list-md>
             <v-layout row wrap class="px-10">
               <v-flex md4 xs12>
-                <v-text-field name="productName" label="Product" hint="Product name is required" value="Input text" v-model="product.productName"
+                <v-select required v-bind:items="categories" label="Category" v-model="product.category_id" :rules="rules.category" ></v-select>
+              </v-flex>
+              <v-flex md4 xs12>
+                <v-text-field name="title" label="Title" hint="Product Title is required" value="Input text" v-model="product.menu"
+                  class="input-group--focused" :rules="rules.name"></v-text-field>
+              </v-flex>              
+              <v-flex md4 xs12>
+                <v-text-field name="productName" label="Product" hint="Product name is required" value="Input text" v-model="product.title"
                   class="input-group--focused" required :rules="rules.name"></v-text-field>
               </v-flex>
               <v-flex md4 xs12>
-                <v-text-field name="unitPrice" prefix="AUD $" label="Price" hint="Price is required" value="Input text" v-model="product.unitPrice"
+                <v-text-field name="unitPrice" prefix="CHY" label="Price" hint="Price is required" value="Input text" v-model="product.price"
                   class="input-group--focused" required></v-text-field>
               </v-flex>
-              <v-flex md4 xs12>
-                <v-text-field name="unitInStock" label="Quantity" hint="Number between 1 to 100" v-model="product.unitInStock" class="input-group--focused"
-                  required></v-text-field>
-              </v-flex>
-              <v-flex md4 xs12>
-                <v-select required v-bind:items="categories" label="Category" v-model="product.categoryId" :rules="rules.category"></v-select>
-              </v-flex>
             </v-layout>
+            <v-layout row wrap class="px-10" id="attrs" v-for="(attr) in attrs" v-bind:key="attr.id">
+              <v-flex md4 xs12>
+                <v-text-field :name="attr.name" :label="attr.title"  value="Input text" v-model="attr.value"
+                  class="input-group--focused" required></v-text-field>
+              </v-flex>
+            </v-layout>        
           </v-container>
         </v-card-text>
       </v-card>
@@ -58,14 +64,13 @@ export default {
       rules: {
         name: [val => (val || '').length > 0 || 'This field is required'],
         category: [val => typeof val === "number" || 'This field is required']
-      }
-
+      },
     }
   },
   methods: {
     save () {
-      const product = Object.assign({}, this.product)
-      delete product.category
+      const product = Object.assign({}, this.product);
+      product.attrs = this.attrs
 
       Store.dispatch('products/saveProduct', product)
         .then(() => {
@@ -83,7 +88,17 @@ export default {
     },
     cancel () {
       this.$router.push({ name: 'Products' })
+    },
+    getAttrs () {
+      const attrs = Object.assign({}, this.product.attrs);
+      delete this.product.attrs
+      Store.dispatch('products/getAttrs', this.product.category_id, attrs)
     }
+  },
+  watch: {
+      "product.category_id": function() {
+          this.getAttrs()
+      }
   },
   computed: {
         ...mapState('products',
@@ -93,12 +108,12 @@ export default {
           loading: 'loading',
           mode: 'mode',
           snackbar: 'snackbar',
-          notice: 'notice'
+          notice: 'notice',
+          schemas: 'schemas',
+          attrs: 'attrs',
         }),
         isValid () {
-          return (
-            this.product && this.product.categoryId  && this.product.productName
-          )
+          return this.product.category && this.product.title
         }
     },
   created () {

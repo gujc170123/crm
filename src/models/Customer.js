@@ -3,23 +3,18 @@
 export class User {
   constructor () {
     this.id = "";
-    this.firstName = "";
-    this.lastName = "";
+    this.username = ""
     this.email = "";
-    this.avatar = "";
     this.mobile = "";
-    this.homephone = "";
-    this.workphone = "";
   }
 }
 
-
-export class Customer extends User {
-
+export class Customer {
   constructor () {
-    super();
-    this.membership = true;
-    this.rewards = 0;
-    this.orders = [];
+    this.id = "";
+    this.linkman = "";
+    this.cn_name = "";
+    this.test_count = 0;
+    this.email = "";
   }
 }

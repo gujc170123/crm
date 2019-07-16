@@ -21,65 +21,54 @@
         <v-card-text>
           <v-container fluid grid-list-md >
             <v-layout row wrap >
+              <v-flex md4 xs12>                
+                <v-text-field readonly name="reference" label="Reference" value="Input text" v-model="order.order_no"
+                  class="input-group--focused" ></v-text-field>
+              </v-flex>
               <v-flex md4 xs12>
-                <v-text-field name="reference" label="Reference" hint="Reference is required" value="Input text" v-model="order.reference"
+                <v-text-field readonly name="Amount" prefix="CNY$" label="Price" hint="Price is required" value="Input text" v-model="order.order_amount"
                   class="input-group--focused" required></v-text-field>
               </v-flex>
               <v-flex md4 xs12>
-                <v-text-field name="Amount" prefix="AUD $" label="Price" hint="Price is required" value="Input text" v-model="order.amount"
-                  class="input-group--focused" required></v-text-field>
-              </v-flex>
-              <v-flex md4 xs12>
-                <v-text-field name="quantity" label="Product Items" hint="Number between 1 to 100" v-model="order.products.length" class="input-group--focused"
+                <v-text-field readonly name="quantity" label="Order Items" hint="Number between 1 to 10" v-model="order.products.length" class="input-group--focused"
                   required></v-text-field>
               </v-flex>
               <v-flex md4 xs12>
-                <v-select required v-bind:items="customers" label="Customer" v-model="order.customerId"></v-select>
+                <v-select required v-bind:items="customers" label="Customer" v-model="order.enterprise_id"></v-select>
               </v-flex>
               <v-flex md4 xs12>
                 <v-menu lazy :close-on-content-click="false" v-model="orderDateMenu" transition="v-scale-transition" offset-y full-width
                   :nudge-left="40" max-width="290px">
-                  <v-text-field slot="activator" label="Order Date" v-model="order.orderDate" prepend-icon="event" readonly></v-text-field>
-                  <v-date-picker v-model="order.orderDate" no-title scrollable>
+                  <v-text-field slot="activator" label="Order Date" v-model="order.order_date" prepend-icon="event" readonly></v-text-field>
+                  <v-date-picker v-model="order.order_date" no-title scrollable>
                   </v-date-picker>
                 </v-menu>
               </v-flex>
               <v-flex md4 xs12>
                 <v-menu lazy :close-on-content-click="false" v-model="shippedDateMenu" transition="v-scale-transition" offset-y full-width
                   :nudge-left="40" max-width="290px">
-                  <v-text-field slot="activator" label="Shipped Date" v-model="order.shippedDate" prepend-icon="event" readonly></v-text-field>
-                  <v-date-picker v-model="order.shippedDate" no-title scrollable>
+                  <v-text-field slot="activator" label="Shipped Date" v-model="order.delivered_date" prepend-icon="event" readonly></v-text-field>
+                  <v-date-picker v-model="order.delivered_date" no-title scrollable>
                   </v-date-picker>
                 </v-menu>
               </v-flex>
               <v-flex md4 xs12>
-                <v-text-field name="address" label="Address" hint="Address is required" value="Input text" v-model="order.shipAddress.address"
-                  class="input-group--focused" required></v-text-field>
-              </v-flex>
-              <v-flex md4 xs12>
-                <v-text-field name="city" label="City" hint="City is required" value="Input text" v-model="order.shipAddress.city" class="input-group--focused"
-                  required></v-text-field>
-              </v-flex>
-              <v-flex md4 xs12>
-                <v-text-field name="zipcode" label="Zip Code" hint="Zip Code is required" value="Input text" v-model="order.shipAddress.zipcode"
-                  class="input-group--focused" required></v-text-field>
-              </v-flex>
-              <v-flex md4 xs12>
-                <v-text-field name="country" label="Country" hint="Country is required" value="Input text" v-model="order.shipAddress.country"
-                  class="input-group--focused" required></v-text-field>
+                <v-menu lazy :close-on-content-click="false" v-model="paidDateMenu" transition="v-scale-transition" offset-y full-width
+                  :nudge-left="40" max-width="290px">
+                  <v-text-field slot="activator" label="Paid Date" v-model="order.paid_date" prepend-icon="event" readonly></v-text-field>
+                  <v-date-picker v-model="order.paid_date" no-title scrollable>
+                  </v-date-picker>
+                </v-menu>
               </v-flex>
               <v-flex xs12 v-if="order.products && order.products.length>0">
-
                 <v-list class="transparent elevation-0" two-line >
                   <v-list-tile avatar ripple v-for="(item, index) in order.products"
                   v-if="item !== null && item !== undefined" v-bind:key="index" class="grey lighten-2 mt-2 mb-2 " >
                       <v-list-tile-content dark >
-                        <v-list-tile-title class="heading blue--text">{{ item.productName }}
-
+                        <v-list-tile-title class="heading blue--text">{{ item.sku_name }}
                         </v-list-tile-title>
-                        <v-list-tile-sub-title class="grey--text text--darken-4">AUD ${{ item.unitPrice }}</v-list-tile-sub-title>
-                        <!--<v-list-tile-sub-title>{{ item.unitInStock }}
-                          </v-list-tile-sub-title>-->
+                        <v-list-tile-sub-title class="grey--text text--darken-4">CNY ${{ item.subtotal }}</v-list-tile-sub-title>
+                        <v-list-tile-sub-title class="grey--text text--darken-4">Licences {{ item.number }}</v-list-tile-sub-title>                        
                       </v-list-tile-content>
                       <v-list-tile-action>
                         <v-btn fab small class="navy" @click.native="remove(item)">
@@ -107,8 +96,12 @@
                   <v-select required v-bind:items="categories" label="Category" v-model="categoryId"  v-on:change="getProductsByCategory"></v-select>
                 </v-flex>
                 <v-flex md6 xs12>
-                  <v-select required v-bind:items="products" label="Product" v-model="productId"></v-select>
-                </v-flex>
+                  <v-select required v-bind:items="products" label="Product" v-model="productId" ></v-select>
+                </v-flex>                
+                <v-flex md4 xs12>
+                  <v-text-field name="quantity" label="Product Items" hint="Number between 1 to 100000" v-model="number" class="input-group--focused"
+                    required></v-text-field>
+                </v-flex>                
               </v-layout>
             </v-container>
           </v-card-text>
@@ -146,9 +139,11 @@ import { mapState, dispatch } from 'vuex'
         dialogText: "Do you want to delete this product?",
         orderDateMenu: false,
         shippedDateMenu: false,
+        paidDateMenu: false,
         errors: [],
         title: '',
         productId: null,
+        number: null,
         snackbarStatus: false,
         timeout: 3000,
         color: '',
@@ -209,8 +204,9 @@ import { mapState, dispatch } from 'vuex'
         this.addProductModal = true
       },
       saveProduct () {
-        Store.dispatch('orders/addProductToOrder', this.productId)
+        Store.dispatch('orders/addProductToOrder',  { "productId": this.productId, "number": this.number })
         this.productId = null;
+        this.number = null;
         this.addProductModal = false
       },
       cancelAddProduct () {

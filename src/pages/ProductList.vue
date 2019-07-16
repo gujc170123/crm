@@ -26,29 +26,13 @@
       <search-panel :rightDrawer="rightDrawer" @cancelSearch="cancelSearch" @searchData="searchProducts">
         <v-layout row>
           <v-flex xs11 offset-xs1>
-            <v-text-field name="productName" label="Product" light v-model="searchVm.contains.productName"></v-text-field>
+            <v-text-field name="productName" label="Product" light v-model="searchVm.contains.title"></v-text-field>
           </v-flex>
         </v-layout>
         <v-layout row>
           <v-flex xs11 offset-xs1>
             <label class="heading text-sm-central" light>Price Range</label>
           </v-flex>
-        </v-layout>
-        <v-layout row>
-          <v-flex xs8 offset-xs1>
-            <v-slider class="text-xs-central" label="Price 1" light v-bind:max="100" v-model="searchVm.between.unitPrice.former"></v-slider>
-          </v-flex>
-          <v-flex xs3>
-              <v-text-field type="number" light v-model="searchVm.between.unitPrice.former"></v-text-field>
-            </v-flex>
-        </v-layout>
-        <v-layout row>
-          <v-flex xs8 offset-xs1>
-            <v-slider class="text-xs-central" label="Price 2" light v-bind:max="999" v-model="searchVm.between.unitPrice.latter"></v-slider>
-          </v-flex>
-          <v-flex xs3>
-              <v-text-field type="number" light v-model="searchVm.between.unitPrice.latter"></v-text-field>
-            </v-flex>
         </v-layout>
       </search-panel>
       <confirm-dialog :dialog="dialog" :dialogTitle="dialogTitle" :dialogText="dialogText" @onConfirm="onConfirm" @onCancel="onCancel" ></confirm-dialog>
@@ -81,21 +65,15 @@ export default {
       right: true,
       search: "",
       headers: [
-        { text: "Product", left: true, value: "productName" },
-        { text: "Category", value: "category.categoryName" },
-        { text: "Price", value: "unitPrice" },
-        { text: "In Stock", value: "unitInStock" }
+        { text: "Category", value: "category.name" },
+        { text: "Product", left: true, value: "title" },
+        { text: "Title", left: true, value: "menu" },
+        { text: "Price", value: "price" },
+        { text: "Survey", value: "survey_id" }
       ],
       searchVm: {
         contains: {
-          productName: "",
-          category: ""
-        },
-        between: {
-          unitPrice: {
-            former: 0,
-            latter: 0
-          }
+          title: ""
         }
       },
       productId: "",
@@ -165,12 +143,19 @@ export default {
     }, 300),
   },
   computed: {
+    snackbar: {
+      get: function () {
+            return this.snackbarStatus;
+        },
+        set: function ( val ) {
+            this.snackbarStatus = val;
+        }
+    },
     ...mapState("products", {
       items: "items",
       pagination: "pagination",
       loading: "loading",
       mode: "mode",
-      snackbar: "snackbar",
       notice: "notice"
     }),
     quickSearch: {

@@ -89,13 +89,13 @@ export default {
         {
           text: 'Reference',
           left: true,
-          value: 'reference'
+          value: 'order_no'
         },
         { text: 'Order Items', value: 'quantity' },
-        { text: 'Amount', value: 'amount' },
+        { text: 'Amount', value: 'order_amount' },
         { text: 'Customer', value: 'customer' },
-        { text: 'Order Date', value: 'orderDate' },
-        { text: 'Shipping Date', value: 'shippedDate' }
+        { text: 'Order Date', value: 'order_date' },
+        { text: 'Shipping Date', value: 'delivered_date' }
       ],
       searchVm: {
         contains: {
@@ -167,12 +167,19 @@ export default {
     }, 300),
   },
   computed: {
+    snackbar: {
+      get: function () {
+            return this.snackbarStatus;
+        },
+        set: function ( val ) {
+            this.snackbarStatus = val;
+        }
+    },
     ...mapState("orders", {
       items: "items",
       pagination: "pagination",
       loading: "loading",
       mode: "mode",
-      snackbar: "snackbar",
       notice: "notice"
     }),
     quickSearch: {

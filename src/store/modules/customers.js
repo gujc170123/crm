@@ -1,4 +1,5 @@
-import api from "@/utils/demo-api";
+// import api from "@/utils/demo-api";
+import api from "@/utils/backend-api";
 import { Customer } from "@/models";
 import {
   sendSuccessNotice,
@@ -26,10 +27,10 @@ const getters = {};
 
 const actions = {
   getOrders ({ commit }) {
-    api.getData("orders/").then(res => {
-      if (res.data && res.data.length > 0) {
-        const orderList = res.data.map(c => {
-          c.text = c.firstName + " " + c.lastName;
+    api.getData("sales/orderlist/").then(res => {
+      if (res.data && res.data['detail'].length > 0) {
+        const orderList = res.data['detail'].map(c => {
+          c.text = c.order_no;
           c.value = c.id;
           return c;
         });
@@ -40,9 +41,9 @@ const actions = {
   getCustomerById ({ commit }, id) {
     commit("setLoading", { loading: true });
     if (id) {
-      api.getData("customers/" + id).then(
+      api.getData("application/customerlist/" + id + "/").then(
         res => {
-          const customer = res.data;
+          const customer = res.data['detail'];
           commit("setCustomer", { customer });
           commit("setLoading", { loading: false });
         },
@@ -57,30 +58,30 @@ const actions = {
   },
   getAllCustomers ({ commit }) {
     commit("setLoading", { loading: true });
-    api.getData("customers?_embed=orders").then(res => {
-      const customers = res.data;
+    api.getData("application/customerlist/").then(res => {
+      const customers = res.data['detail'];
 
-      customers.forEach(item => {
-        item.orderAmount = item.orders ? item.orders.length : 0;
+      // customers.forEach(item => {
+      //   item.orderAmount = item.orders ? item.orders.length : 0;
 
-      });
+      // });
       commitPagination(commit, customers);
       commit("setLoading", { loading: false });
     });
   },
   searchCustomers ({ commit }, searchQuery, pagination) {
-    api.getData("customers?_embed=orders&" + searchQuery).then(res => {
-      const customers = res.data;
-      customers.forEach(p => {
-        p.orderAmount = p.orders.length;
-      });
+    api.getData("application/customerlist/?" + searchQuery).then(res => {
+      const customers = res.data['detail'];
+      // customers.forEach(p => {
+      //   p.orderAmount = p.orders.length;
+      // });
       commitPagination(commit, customers);
     });
   },
   quickSearch ({ commit }, { headers, qsFilter, pagination }) {
     // TODO: Following solution should be replaced by DB full-text search for production
-    api.getData("customers?_embed=orders").then(res => {
-      const customers = res.data.filter(r =>
+    api.getData("application/customerlist/?_embed=orders").then(res => {
+      const customers = res.data['detail'].filter(r =>
         headers.some(header => {
           const val = get(r, [header.value]);
           return (
@@ -93,15 +94,15 @@ const actions = {
           );
         })
       );
-      customers.forEach(item => {
-        item.orderAmount = item.orders.length;
-      });
+      // customers.forEach(item => {
+      //   item.orderAmount = item.orders.length;
+      // });
       commitPagination(commit, customers);
     });
   },
   deleteCustomer ({ commit, dispatch }, id, query, pagination) {
     api
-      .deleteData("customers/" + id.toString())
+      .deleteData("application/customerlist/" + id.toString() + "/")
       .then(res => {
         return new Promise((resolve, reject) => {
           sendSuccessNotice(commit, "Operation is done.");
@@ -117,9 +118,9 @@ const actions = {
   saveCustomer ({ commit, dispatch }, customer) {
     if (!customer.id) {
       api
-        .postData("customers/", customer)
+        .postData("application/customerlist/", customer)
         .then(res => {
-          const customer = res.data;
+          const customer = res.data['detail'];
           commit("setCustomer", { customer });
           sendSuccessNotice(commit, "New customer has been added.");
         })
@@ -130,9 +131,9 @@ const actions = {
         });
     } else {
       api
-        .putData("customers/" + customer.id.toString(), customer)
+        .putData("application/customerlist/" + customer.id.toString() + "/", customer)
         .then(res => {
-          const customer = res.data;
+          const customer = res.data['detail'];
           commit("setCustomer", { customer });
           sendSuccessNotice(commit, "Customer has been updated.");
         })

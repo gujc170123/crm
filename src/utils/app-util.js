@@ -4,9 +4,9 @@ const SearchFilterOps = {
   LessThan: '_lte',
   GreaterThanOrEqual: '_gte',
   LessThanOrEqual: '_lte',
-  Contains: '_like',
-  StartsWith: '_like',
-  EndsWith: '_like',
+  Contains: '__icontains',
+  StartsWith: '_icontains',
+  EndsWith: '_icontains',
   Between: ''
 }
 

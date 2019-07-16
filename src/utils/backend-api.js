@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const BASE_URL = 'http://localhost:5354/'
+const BASE_URL = 'http://new.yx.iwedoing.com/api/ws/v1/'
 
 const instance = axios.create({
   baseURL: BASE_URL,
@@ -14,11 +14,12 @@ instance.interceptors.request.use(function (config) {
   const {token} = Store.state.user
   console.log("token", token)
   if (token) {
-    config.headers.common['Authorization'] = 'Bearer ' + token
-    config.headers.common['Access-Control-Allow-Origin'] = '*'
+    // config.headers.common['Authorization'] = 'Bearer ' + token
+    // config.headers.common['Access-Control-Allow-Origin'] = '*'
   } else {
     // Use application/x-www-form-urlencoded for login
-    config.headers.common['Content-Type'] = 'application/x-www-form-urlencoded'
+    // config.headers.common['Content-Type'] = 'application/x-www-form-urlencoded'
+    // config.headers.common['Access-Control-Allow-Origin'] = '*'
   }
   return config
 }, function (error) {

@@ -1,6 +1,6 @@
 /* globals Store */
-
-import api from "@/utils/demo-api";
+// import api from "@/utils/demo-api";
+import api from "@/utils/backend-api";
 import {Product} from "@/models";
 import {
   sendSuccessNotice,
@@ -20,6 +20,7 @@ const state = {
   notice: "",
   product: new Product(),
   categories: [],
+  attrs: [],
 };
 
 const getters = {
@@ -27,24 +28,47 @@ const getters = {
 
 const actions = {
   getCategories ({ commit }) {
-    api.getData("categories/").then(res => {
+    api.getData("sales/categorylist/").then(res => {
       const categories = [];
-      res.data.forEach(c => {
+      res.data['detail'].forEach(c => {
         const category = { ...c };
-        category.text = c.categoryName;
+        category.text = c.name;
         category.value = c.id;
         categories.push(category);
       });
       commit("setCategories", categories);
     });
   },
+  getAttrs ({ commit }, id, attrs) {
+    if (id) {
+      if (attrs){
+        commit("setAttrs", attrs);
+      }
+      else {
+        api.getData("sales/schemalist/?category_id=" + id).then(res => {
+          const attrs = []
+          res.data['detail'].forEach(c => {
+            const attr = {};
+            attr.id = c.id
+            attr.title = c.title;
+            attr.name = c.name;
+            attr.value = null;
+            attrs.push(attr);
+          });
+        commit("setAttrs", attrs);
+      })}}
+    else {
+      commit("setAttrs", []);
+    }
+  },
   getProductById ({ commit }, id) {
     if (id) {
       commit("setLoading", { loading: true });
-      api.getData("products/" + id + "?_expand=category").then(
+      api.getData("sales/productlist/" + id + "?_expand=category").then(
         res => {
-          const product = res.data;
+          const product = res.data['detail'];
           commit("setProduct", { product });
+          commit("setAttrs", product.attrs);
         },
         err => {
           console.log(err);
@@ -57,28 +81,27 @@ const actions = {
   },
   getAllProducts ({ commit }) {
     commit("setLoading", { loading: true });
-    api.getData("products?_expand=category").then(res => {
-      const products = res.data;
+    api.getData("sales/productlist/?_expand=category").then(res => {
+      const products = res.data['detail'];
       products.forEach(p => {
-        p.categoryName = p.category.categoryName;
+        p.categoryName = p.category.name;
       });
       commitPagination(commit, products);
       commit("setLoading", { loading: false });
     });
   },
   searchProducts ({ commit }, searchQuery) {
-    api.getData("products?_expand=category&" + searchQuery).then(res => {
-      const products = res.data;
+    api.getData("sales/productlist/?_expand=category&" + searchQuery).then(res => {
+      const products = res.data['detail'];
       products.forEach(p => {
-        p.categoryName = p.category.categoryName;
+        p.categoryName = p.category.name;
       });
       commitPagination(commit, products);
     });
   },
   quickSearch ({ commit }, { headers, qsFilter, pagination }) {
-    // TODO: Following solution should be replaced by DB full-text search for production
-    api.getData("products?_expand=category").then(res => {
-      const products = res.data.filter(r =>
+    api.getData("sales/productlist/?_expand=category").then(res => {
+      const products = res.data['detail'].filter(r =>
         headers.some(header => {
           const val = get(r, [header.value]);
           return (
@@ -98,8 +121,8 @@ const actions = {
     });
   },
   deleteProduct ({ commit, dispatch }, id) {
-    api
-      .deleteData("products/" + id.toString())
+    return api
+      .deleteData("sales/productlist/" + id.toString() + "/")
       .then(res => {
         return new Promise((resolve, reject) => {
           sendSuccessNotice(commit, "Operation is done.");
@@ -113,12 +136,11 @@ const actions = {
       });
   },
   saveProduct  ({ commit, dispatch }, product) {
-    delete product.category;
     if (!product.id) {
       api
-        .postData("products/", product)
+        .postData("sales/productlist/", product)
         .then(res => {
-          const product = res.data;
+          const product = res.data['detail'];
           commit("setProduct", { product });
           sendSuccessNotice(commit, "New product has been added.");
           closeNotice(commit, 1500);
@@ -130,9 +152,9 @@ const actions = {
         });
     } else {
       api
-        .putData("products/" + product.id.toString(), product)
+        .putData("sales/productlist/" + product.id.toString() + "/", product)
         .then(res => {
-          const product = res.data;
+          const product = res.data['detail'];
           commit("setProduct", { product });
           sendSuccessNotice(commit, "Product has been updated.");
           closeNotice(commit, 1500);
@@ -173,8 +195,11 @@ const mutations = {
     state.mode = mode;
   },
   setProduct (state, {product}) {
-    state.product = product
-  }
+    state.product = product;
+  },
+  setAttrs (state, attrs) {
+    state.attrs = attrs;
+  },
 };
 
 export default {

@@ -27,33 +27,7 @@
  <search-panel :rightDrawer="rightDrawer" @cancelSearch="cancelSearch" @searchData="searchCustomers">
  <v-layout row>
           <v-flex xs11 offset-xs1>
-            <v-text-field name="input-1-3" label="Frist Name" light v-model="searchVm.contains.firstName"></v-text-field>
-          </v-flex>
-        </v-layout>
-        <v-layout row>
-          <v-flex xs11 offset-xs1>
-            <v-text-field name="input-1-3" label="Last Name" light v-model="searchVm.contains.lastName"></v-text-field>
-          </v-flex>
-        </v-layout>
-        <v-layout row>
-          <v-flex xs11 offset-xs1>
-            <v-subheader class="text-sm-central" light>Reward range between Reward 1 and Reward 2 </v-subheader>
-          </v-flex>
-        </v-layout>
-        <v-layout row>
-          <v-flex xs8 offset-xs1>
-            <v-slider label="Reward 1" light v-bind:max="50" v-model="searchVm.between.rewards.former"></v-slider>
-          </v-flex>
-          <v-flex xs3>
-            <v-text-field type="number" light v-model="searchVm.between.rewards.former"></v-text-field>
-          </v-flex>
-        </v-layout>
-        <v-layout row>
-          <v-flex xs8 offset-xs1>
-            <v-slider label="Reward 2" light v-bind:max="100" v-model="searchVm.between.rewards.latter"></v-slider>
-          </v-flex>
-          <v-flex xs3>
-            <v-text-field type="number" light v-model="searchVm.between.rewards.latter"></v-text-field>
+            <v-text-field name="input-1-3" label="Name" light v-model="searchVm.contains.cn_name"></v-text-field>
           </v-flex>
         </v-layout>
          </search-panel>
@@ -89,26 +63,18 @@ export default {
       search: '',
       headers: [
         {
-          text: 'First Name',
+          text: 'Name',
           left: true,
-          value: 'firstName'
+          value: 'cn_name'
         },
-        { text: 'Last Name', value: 'lastName' },
         { text: 'Email', value: 'email' },
-        { text: 'Mobile', value: 'mobile' },
-        { text: 'Reward', value: 'rewards' },
-        { text: 'Previous Order(s)', value: 'orderAmount' },
-        { text: 'Membership', value: 'membership' },
+        { text: 'Liason', value: 'linkman' },
       ],
       // items: [],
       searchVm: {
         contains: {
-          firstName: '',
-          lastName: ''
+          cn_name: ''
         },
-        between: {
-          rewards: { former: 0, latter: 0 }
-        }
       },
       customerId: "",
       query: "",
@@ -154,7 +120,7 @@ export default {
     clearSearchFilters () {
       this.rightDrawer = !this.rightDrawer
       this.appUtil.clearSearchFilters(this.searchVm)
-      this.api.getData('customers/').then((res) => {
+      this.api.getData('sales/customers/').then((res) => {
         this.items = res.data
         this.items.forEach((item) => {
           if (item.orders && item.orders.length) {
