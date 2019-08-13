@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import ErrorPage from '@/components/404'
 
 import Dashboard from '@/pages/Dashboard'
+import ApplicationList from '@/pages/ApplicationList'
 import OrderList from '@/pages/OrderList'
 import OrderForm from '@/pages/OrderForm'
 import About from '@/pages/About'
@@ -38,6 +39,7 @@ export default new Router({
   routes: [
     { path: '/404', component: ErrorPage, name: 'ErrorPage' },
     { path: '/dashboard', component: Dashboard, name: 'Dashboard', beforeEnter: requireAuth },
+    { path: '/applications', component: ApplicationList, name: 'Applications', beforeEnter: requireAuth },
     { path: '/about', component: About, name: 'About', beforeEnter: requireAuth },
     { path: '/orders', component: OrderList, name: 'Orders', beforeEnter: requireAuth },
     { path: '/neworder', component: OrderForm, name: 'NewOrder', beforeEnter: requireAuth },

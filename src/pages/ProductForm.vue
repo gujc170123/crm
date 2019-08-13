@@ -18,7 +18,7 @@
           <v-container fluid grid-list-md>
             <v-layout row wrap class="px-10">
               <v-flex md4 xs12>
-                <v-select required v-bind:items="categories" label="Category" v-model="product.category_id" :rules="rules.category" ></v-select>
+                <v-select required v-bind:items="categories" label="Category" v-model="product.category_id" :rules="rules.category" @change="selectCategory()" ></v-select>
               </v-flex>
               <v-flex md4 xs12>
                 <v-text-field name="title" label="Title" hint="Product Title is required" value="Input text" v-model="product.menu"
@@ -28,6 +28,9 @@
                 <v-text-field name="productName" label="Product" hint="Product name is required" value="Input text" v-model="product.title"
                   class="input-group--focused" required :rules="rules.name"></v-text-field>
               </v-flex>
+              <v-flex md4 xs12>
+                <v-select required v-bind:items="items" label="IS Platform" v-model="product.is_platform" :rules="rules.platform" ></v-select>
+              </v-flex>              
               <v-flex md4 xs12>
                 <v-text-field name="unitPrice" prefix="CHY" label="Price" hint="Price is required" value="Input text" v-model="product.price"
                   class="input-group--focused" required></v-text-field>
@@ -56,6 +59,8 @@ import { mapState, dispatch } from 'vuex'
 export default {
   data () {
     return {
+      init: true,
+      items: [{"value": true, "text": "Yes"}, {"value": false, "text": "No"}],
       errors: [],
       title: '',
       snackbarStatus: false,
@@ -63,7 +68,8 @@ export default {
       color: '',
       rules: {
         name: [val => (val || '').length > 0 || 'This field is required'],
-        category: [val => typeof val === "number" || 'This field is required']
+        category: [val => typeof val === "number" || 'This field is required'],
+        platform: [val => typeof val === "boolean" || 'This field is required']
       },
     }
   },
@@ -77,8 +83,8 @@ export default {
           Store.dispatch("products/closeSnackBar", 2000)
         })
     },
-    selectCategory (item) {
-      this.product.categoryId = item.value
+    selectCategory () {
+      this.init = false;
     },
     getProduct () {
       Store.dispatch('products/getProductById', this.$route.params.id)
@@ -97,7 +103,10 @@ export default {
   },
   watch: {
       "product.category_id": function() {
-          this.getAttrs()
+          console.log(this.init);
+          if (!this.init) {
+            this.getAttrs()
+          }
       }
   },
   computed: {

@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const BASE_URL = 'http://new.yx.iwedoing.com/api/ws/v1/'
+const BASE_URL = 'http://localhost:8000/api/ws/v1/'
 
 const instance = axios.create({
   baseURL: BASE_URL,
