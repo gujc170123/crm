@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "axios": "^0.16.2",
-    "chart.js": "^2.7.2",
+    "chart.js": "^2.9.4",
     "lodash": "^4.17.5",
     "vue": "^2.5.15",
     "vue-chartjs": "^2.6.5",
